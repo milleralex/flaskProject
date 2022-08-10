@@ -1,4 +1,6 @@
-from flask import Flask, render_template, Response
+import os
+
+from flask import Flask, render_template, Response, send_from_directory
 from markupsafe import escape
 import cv2
 
@@ -19,12 +21,17 @@ def gen_frames():
 
 @app.route('/btn/<btn_name>')
 def press_button(btn_name):  # put application's code here
+    os.system('irsend SEND_ONCE Vizio {}'.format(btn_name))
     print(escape(btn_name))
     return ""
 
 @app.route('/')
-def hello_world():  # put application's code here
-    return render_template('index.html')
+def base():
+    return send_from_directory('client/public', 'index.html')
+
+@app.route("/<path:path>")
+def home(path):
+    return send_from_directory('client/public', path)
 
 @app.route('/video_feed')
 def video_feed():
